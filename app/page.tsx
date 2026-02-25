@@ -1923,7 +1923,7 @@ export default function Portal() {
       
       <aside style={{ width: '320px', background: '#fff', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', padding: '40px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '48px', padding: '0 8px' }}>
-          <img src={logoImg.src || logoImg} style={{width:36}}/>
+          <img src={typeof logoImg === 'string' ? logoImg : (logoImg as any).src} style={{width:36}}/>
           <span style={{fontWeight:800, fontSize:'28px', color: '#0f172a', letterSpacing: '-0.02em'}}>Connect</span>
         </div>
         
