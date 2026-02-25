@@ -1783,7 +1783,7 @@ export default function Portal() {
             <button onClick={() => setIsTeamLogin(true)} style={{ background: 'none', border: 'none', color: isTeamLogin ? '#fff' : '#64748b', fontWeight: 800, borderBottom: isTeamLogin ? '2px solid #22c55e' : '2px solid transparent', paddingBottom: '8px', cursor: 'pointer', fontSize: '15px' }}>Team Login</button>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '48px' }}><img src={logoImg.src || logoImg} alt="" style={{ width: 34 }} /><span style={{ fontWeight: 800, fontSize: '26px' }}>Connect</span></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '48px' }}><img src={typeof logoImg === 'string' ? logoImg : (logoImg as any).src} alt="" style={{ width: 34 }} /><span style={{ fontWeight: 800, fontSize: '26px' }}>Connect</span></div>
           
           <h1 style={{ fontSize: '36px', fontWeight: 800, marginBottom: '8px' }}>
             {isSignUp ? 'Create an account' : (isTeamLogin ? 'Connect Team Login' : 'Welcome back')}
