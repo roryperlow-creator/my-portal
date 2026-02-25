@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 import logoImg from './logo.png';
 
 // ─── UNIFIED ICON SYSTEM ────────────────────────────────────────────────────
-const Ic = ({ n, s = 20 }: { n: string, s?: number }) => {
-  const p = { width: s, height: s, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+const Ic = ({ n, s = 20, color = 'currentColor' }: { n: string, s?: number, color?: string }) => {
+  const p = { width: s, height: s, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: '2', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   const icons: Record<string, React.ReactNode> = {
     home: <svg {...p}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
     forms: <svg {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
