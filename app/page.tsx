@@ -109,8 +109,11 @@ const Toggle = ({ enabled, onToggle }: { enabled: boolean, onToggle: () => void 
 );
 // ─── 3. GLOBAL SHELL & NAVIGATION ───────────────────────────────────────────
 
-const TopBar = ({ profile, activeSystem, setShowWorkspaceMenu, showWorkspaceMenu, toggleBot }: any) => {
+const TopBar = ({ profile, activeSystem, setActiveSystem, setActiveTab, setShowWorkspaceMenu, showWorkspaceMenu, toggleBot }: any) => {
   const [showNotifications, setShowNotifications] = useState(false);
+  
+  // Allow switching if user is an owner, OR if their account is explicitly set to "both"
+  const canSwitchWorkspace = profile?.role === 'owner' || profile?.client_type === 'both';
   
   return (
     <header style={{ height: '80px', background: '#fff', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px', position: 'sticky', top: 0, zIndex: 100 }}>
@@ -155,7 +158,7 @@ const TopBar = ({ profile, activeSystem, setShowWorkspaceMenu, showWorkspaceMenu
 
         {/* Profile / Workspace Switcher */}
         <div style={{ position: 'relative' }}>
-          <div onClick={() => profile?.client_type === 'both' && setShowWorkspaceMenu(!showWorkspaceMenu)} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: profile?.client_type === 'both' ? 'pointer' : 'default' }}>
+          <div onClick={() => canSwitchWorkspace && setShowWorkspaceMenu(!showWorkspaceMenu)} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: canSwitchWorkspace ? 'pointer' : 'default' }}>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{profile?.full_name}</div>
               <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{activeSystem} Workspace</div>
@@ -164,11 +167,20 @@ const TopBar = ({ profile, activeSystem, setShowWorkspaceMenu, showWorkspaceMenu
                {profile?.full_name?.charAt(0) || 'U'}
             </div>
           </div>
-          {showWorkspaceMenu && profile?.client_type === 'both' && (
+          
+          {showWorkspaceMenu && canSwitchWorkspace && (
             <div style={{ position: 'absolute', top: '100%', right: 0, width: '200px', background: '#fff', borderRadius: '12px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', zIndex: 100, padding: '8px', marginTop: '12px' }}>
               <div style={{ fontSize: '10px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', padding: '8px 12px', letterSpacing: '0.05em' }}>Switch Workspace</div>
-              <button onClick={() => setShowWorkspaceMenu(false)} style={{ width: '100%', textAlign: 'left', padding: '12px', borderRadius: '8px', border: 'none', background: activeSystem === 'recruiting' ? '#f0fdf4' : 'transparent', color: activeSystem === 'recruiting' ? '#16a34a' : '#0f172a', cursor: 'pointer', fontWeight: 700, fontSize: '13px' }}>Recruiting System</button>
-              <button onClick={() => setShowWorkspaceMenu(false)} style={{ width: '100%', textAlign: 'left', padding: '12px', borderRadius: '8px', border: 'none', background: activeSystem === 'retention' ? '#f0fdf4' : 'transparent', color: activeSystem === 'retention' ? '#16a34a' : '#0f172a', cursor: 'pointer', fontWeight: 700, fontSize: '13px' }}>Retention System</button>
+              <button 
+                onClick={() => { setActiveSystem('recruiting'); setActiveTab('dashboard'); setShowWorkspaceMenu(false); }} 
+                style={{ width: '100%', textAlign: 'left', padding: '12px', borderRadius: '8px', border: 'none', background: activeSystem === 'recruiting' ? '#f0fdf4' : 'transparent', color: activeSystem === 'recruiting' ? '#16a34a' : '#0f172a', cursor: 'pointer', fontWeight: 700, fontSize: '13px' }}>
+                Recruiting System
+              </button>
+              <button 
+                onClick={() => { setActiveSystem('retention'); setActiveTab('dashboard'); setShowWorkspaceMenu(false); }} 
+                style={{ width: '100%', textAlign: 'left', padding: '12px', borderRadius: '8px', border: 'none', background: activeSystem === 'retention' ? '#f0fdf4' : 'transparent', color: activeSystem === 'retention' ? '#16a34a' : '#0f172a', cursor: 'pointer', fontWeight: 700, fontSize: '13px' }}>
+                Retention System
+              </button>
             </div>
           )}
         </div>
@@ -176,6 +188,7 @@ const TopBar = ({ profile, activeSystem, setShowWorkspaceMenu, showWorkspaceMenu
     </header>
   );
 };
+
 // ─── 4. ADMIN HEADQUARTERS (God Mode) ───────────────────────────────────────
 
 const AdminSalesDashboard = () => {
@@ -1468,9 +1481,20 @@ export default function Portal() {
         </div>
       </aside>
 
-      {/* MAIN APPLICATION SHELL */}
+{/* MAIN APPLICATION SHELL */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-        <TopBar profile={profile} activeSystem={activeSystem} setShowWorkspaceMenu={setShowWorkspaceMenu} showWorkspaceMenu={showWorkspaceMenu} toggleBot={() => setIsBotOpen(!isBotOpen)} />
+        <TopBar 
+          profile={profile} 
+          activeSystem={activeSystem} 
+          setActiveSystem={setActiveSystem} 
+          setActiveTab={setActiveTab}
+          setShowWorkspaceMenu={setShowWorkspaceMenu} 
+          showWorkspaceMenu={showWorkspaceMenu} 
+          toggleBot={() => setIsBotOpen(!isBotOpen)} 
+        />
+        
+        <main style={{ flex: 1, padding: '40px 60px', overflowY: 'auto' }}></main>
+
         
         <main style={{ flex: 1, padding: '40px 60px', overflowY: 'auto' }}>
           
