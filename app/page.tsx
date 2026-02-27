@@ -1041,6 +1041,232 @@ const GhlAccountView = ({ profile, setProfile, isEmployee }: any) => {
     </div>
   );
 };
+// ─── MISSING CRM COMPONENTS (Leads, Forms, Integrations, Notifications) ─────
+
+const LeadsView = () => {
+  const mockLeads = [
+    { id: 1, name: 'Mike Johnson', phone: '(555) 234-5678', email: 'mike.johnson@gmail.com', coverage: '$500K-$1M', timeline: "I'm ready today", status: 'new', date: 'Oct 24, 2026' },
+    { id: 2, name: 'Sarah Martinez', phone: '(555) 876-5432', email: 'sarah.m@yahoo.com', coverage: '$250K-$500K', timeline: 'Within a week', status: 'contacted', date: 'Oct 23, 2026' },
+    { id: 3, name: 'David Chen', phone: '(555) 111-3333', email: 'david.chen@outlook.com', coverage: '$1M+', timeline: 'Within a month', status: 'pitched', date: 'Oct 22, 2026' }
+  ];
+
+  const [selectedLead, setSelectedLead] = useState<any>(null);
+
+  const getStatusBadge = (s: string) => {
+    const map: any = { new: 'info', contacted: 'warning', pitched: 'neutral', sold: 'success', not_sold: 'danger', follow_up: 'warning' };
+    return <Badge text={s.replace('_', ' ')} status={map[s] || 'neutral'} />;
+  };
+
+  if (selectedLead) {
+    return (
+      <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto' }}>
+        <Button variant="ghost" onClick={() => setSelectedLead(null)} icon="back" style={{ marginBottom: '24px', padding: 0 }}>Back to Leads</Button>
+        <Card style={{ overflow: 'hidden' }}>
+          <div style={{ padding: '32px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', background: '#f8fafc' }}>
+            <div>
+              <h1 style={{ margin: '0 0 8px 0', fontSize: '28px', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {selectedLead.name} {selectedLead.timeline === "I'm ready today" && <span style={{color:'#ef4444'}}><Ic n="fire" s={24}/></span>}
+              </h1>
+              <div style={{ fontSize: '15px', color: '#475569', fontWeight: 500 }}>{selectedLead.email} • {selectedLead.phone}</div>
+            </div>
+            {getStatusBadge(selectedLead.status)}
+          </div>
+          <div style={{ padding: '32px', background: '#fff' }}>
+             <h3 style={{ margin: '0 0 24px 0', fontSize: '16px', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Insurance Needs</h3>
+             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
+               <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}><div style={{ fontSize: '12px', color: '#64748b', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>Coverage Requested</div><div style={{ fontSize: '16px', color: '#0f172a', fontWeight: 700 }}>{selectedLead.coverage}</div></div>
+               <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}><div style={{ fontSize: '12px', color: '#64748b', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>Timeline</div><div style={{ fontSize: '16px', color: selectedLead.timeline === "I'm ready today" ? '#ef4444' : '#0f172a', fontWeight: 700 }}>{selectedLead.timeline}</div></div>
+               <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}><div style={{ fontSize: '12px', color: '#64748b', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>Status</div><div style={{ fontSize: '16px', color: '#0f172a', fontWeight: 700, textTransform: 'capitalize' }}>{selectedLead.status}</div></div>
+             </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div><h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a' }}>Leads Table</h1><p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px' }}>Traditional list view of your incoming inquiries.</p></div>
+        <Button variant="primary" icon="plus">Add Lead</Button>
+      </div>
+      <Card style={{ overflow: 'hidden' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid #e2e8f0', background: '#f8fafc' }}>
+              <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>Lead Name</th>
+              <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>Coverage Request</th>
+              <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>Timeline</th>
+              <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {mockLeads.map(l => (
+              <tr key={l.id} onClick={() => setSelectedLead(l)} style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = '#fff'}>
+                <td style={{ padding: '24px' }}><div style={{ fontWeight: 800, color: '#0f172a', fontSize: '15px', display: 'flex', gap: '8px' }}>{l.name} {l.timeline === "I'm ready today" && <Ic n="fire" s={16} color="#ef4444"/>}</div><div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>{l.phone}</div></td>
+                <td style={{ padding: '24px', color: '#0f172a', fontWeight: 700, fontSize: '14px' }}>{l.coverage}</td>
+                <td style={{ padding: '24px', color: '#475569', fontSize: '14px', fontWeight: 600 }}>{l.timeline}</td>
+                <td style={{ padding: '24px' }}>{getStatusBadge(l.status)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+};
+
+const InternalFormsView = () => {
+  const [formData, setFormData] = useState({ first_name: '', last_name: '', phone: '', email: '', monthly_premium: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setTimeout(() => { alert("Success! Form processed."); setIsSubmitting(false); setFormData({first_name:'', last_name:'', phone:'', email:'', monthly_premium:''}) }, 1000);
+  };
+
+  return (
+    <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>Internal Forms</h1>
+      <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px', marginBottom: '24px' }}>Process and activate new client policies.</p>
+      
+      <div style={{ display: 'flex', gap: '40px', alignItems: 'flex-start' }}>
+        <Card style={{ flex: '1 1 500px', padding: '40px' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '8px', color: '#0f172a' }}>Policy Intake Form</h2>
+          <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '32px' }}>Complete this upon closing the policy.</p>
+          <form onSubmit={handleSubmit}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+               <Input placeholder="First Name" required value={formData.first_name} onChange={(e:any) => setFormData({...formData, first_name: e.target.value})} />
+               <Input placeholder="Last Name" required value={formData.last_name} onChange={(e:any) => setFormData({...formData, last_name: e.target.value})} />
+            </div>
+            <Input placeholder="Email Address" type="email" required value={formData.email} onChange={(e:any) => setFormData({...formData, email: e.target.value})} />
+            <Input placeholder="Monthly Premium ($)" type="number" required value={formData.monthly_premium} onChange={(e:any) => setFormData({...formData, monthly_premium: e.target.value})} />
+            <Button variant="primary" style={{ width: '100%', marginTop: '16px' }} icon="check">{isSubmitting ? 'Processing...' : 'Submit Application'}</Button>
+          </form>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+const IntegrationHubView = () => {
+  const [integrations, setIntegrations] = useState([
+    { id: 'fb', name: 'Facebook Ads', desc: 'Sync inbound leads directly into your Recruiting or Retention pipeline.', connected: true, category: 'Marketing', icon: 'users', color: '#1877F2' },
+    { id: 'zapier', name: 'Zapier', desc: 'Connect Connect Portal to 5,000+ external apps via Webhooks.', connected: true, category: 'Automation', icon: 'zap', color: '#FF4A00' },
+    { id: 'ghl', name: 'GoHighLevel', desc: 'Bi-directional sync for CRM contacts, tags, and pipeline stages.', connected: false, category: 'CRM', icon: 'trending', color: '#1699e8' },
+    { id: 'sheets', name: 'Google Sheets', desc: 'Auto-export your daily KPI reports and new lead data to a secure sheet.', connected: false, category: 'Data', icon: 'forms', color: '#0F9D58' },
+    { id: 'calendar', name: 'Google Calendar', desc: 'Sync your scheduled reviews, demos, and create Meet links instantly.', connected: true, category: 'Scheduling', icon: 'calendar', color: '#4285F4' },
+  ]);
+
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [tempKey, setTempKey] = useState('');
+
+  const toggleConnection = (id: string) => {
+    const integration = integrations.find(i => i.id === id);
+    if (!integration?.connected) {
+      setActiveModal(id);
+    } else {
+      setIntegrations(integrations.map(i => i.id === id ? { ...i, connected: false } : i));
+    }
+  };
+
+  const handleSaveIntegration = () => {
+    setIntegrations(integrations.map(i => i.id === activeModal ? { ...i, connected: true } : i));
+    setActiveModal(null);
+    setTempKey('');
+  };
+
+  const activeApp = integrations.find(i => i.id === activeModal);
+
+  return (
+    <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div>
+          <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>Integration Hub</h1>
+          <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px' }}>Connect your portal to the tools you already use.</p>
+        </div>
+        <Button variant="primary" icon="search">Browse App Directory</Button>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
+        {integrations.map(app => (
+          <Card key={app.id} style={{ padding: '32px', display: 'flex', flexDirection: 'column', height: '100%', transition: 'border 0.2s', border: app.connected ? '1px solid #22c55e' : '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+              <div style={{ width: 56, height: 56, borderRadius: '16px', background: `${app.color}15`, color: app.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Ic n={app.icon} s={28} />
+              </div>
+              <Toggle enabled={app.connected} onToggle={() => toggleConnection(app.id)} />
+            </div>
+            <h3 style={{ margin: '0 0 8px 0', fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>{app.name}</h3>
+            <p style={{ margin: '0 0 24px 0', color: '#64748b', fontSize: '14px', lineHeight: '1.6', flex: 1 }}>{app.desc}</p>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '20px', borderTop: '1px solid #f1f5f9' }}>
+              <Badge text={app.category} status="neutral" />
+              {app.connected ? (
+                <span style={{ fontSize: '13px', fontWeight: 800, color: '#16a34a', display: 'flex', alignItems: 'center', gap: '6px' }}><Ic n="check" s={14}/> Connected</span>
+              ) : (
+                <Button variant="ghost" onClick={() => setActiveModal(app.id)} style={{ padding: 0, fontSize: '13px' }}>Configure ➔</Button>
+              )}
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <Modal isOpen={!!activeModal} onClose={() => { setActiveModal(null); setTempKey(''); }} title={`Connect ${activeApp?.name}`}>
+        <p style={{ color: '#64748b', fontSize: '15px', marginBottom: '24px', lineHeight: '1.6' }}>
+          To securely connect <strong>{activeApp?.name}</strong> to your portal, please provide your API Key or authorize access below.
+        </p>
+        {activeApp?.id === 'zapier' ? (
+           <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '12px', border: '1px dashed #cbd5e1', marginBottom: '24px' }}>
+             <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Your Webhook URL</div>
+             <div style={{ display: 'flex', gap: '12px' }}>
+               <input readOnly value="https://api.connect-hq.net/v1/zapier/hook/98x7-34" style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff', color: '#0f172a', fontSize: '14px', outline: 'none' }} />
+               <Button variant="outline">Copy</Button>
+             </div>
+           </div>
+        ) : (
+          <Input label={`${activeApp?.name} API Key / Token`} type="password" placeholder="Paste your API key here..." value={tempKey} onChange={(e:any) => setTempKey(e.target.value)} />
+        )}
+        <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
+          <Button variant="primary" style={{ flex: 1 }} onClick={handleSaveIntegration}>Save & Connect</Button>
+          <Button variant="outline" onClick={() => { setActiveModal(null); setTempKey(''); }}>Cancel</Button>
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
+const NotificationsView = () => {
+  const mockNotifications = [
+    { id: 1, type: 'alert', icon: 'alert', color: '#ef4444', bg: '#fef2f2', title: 'Action Required', text: 'You have a pending notification that requires your immediate attention.', time: '10 min ago' },
+    { id: 2, type: 'message', icon: 'chat', color: '#3b82f6', bg: '#eff6ff', title: 'New Message', text: 'Jane Smith replied back: "Can we get on a call to discuss the details?"', time: '1 hour ago' },
+  ];
+  return (
+    <div style={{ maxWidth: '1000px', width: '100%', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>Notifications</h1>
+      <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px', marginBottom: '32px' }}>Stay on top of alerts and messages.</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {mockNotifications.map(note => (
+          <Card key={note.id} style={{ padding: '32px', display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: note.bg, color: note.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Ic n={note.icon} s={28} /></div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{note.title}</h3>
+                <span style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 700 }}>{note.time}</span>
+              </div>
+              <p style={{ margin: 0, color: '#475569', fontSize: '15px', lineHeight: '1.6' }}>{note.text}</p>
+              <div style={{ marginTop: '20px', display: 'flex', gap: '12px' }}>
+                <Button variant="outline">Mark as Resolved</Button>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // ─── 10. MAIN APP ROOT & ROUTING ────────────────────────────────────────────
 
 const ChatUI = ({ messages, onSend, onClose }: any) => {
