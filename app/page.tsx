@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 import logoImg from './logo.png';
 
 // ─── 1. UNIFIED ICON SYSTEM (Enterprise SaaS Set) ───────────────────────────
-const Ic = ({ n, s = 20, color = 'currentColor' }: { n: string, s?: number, color?: string }) => {
-  const p = { width: s, height: s, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: '2', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+const Ic = ({ n, s = 20, color = 'currentColor', style }: { n: string, s?: number, color?: string, style?: React.CSSProperties }) => {
+  const p = { width: s, height: s, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: '2', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, style };
   const icons: Record<string, React.ReactNode> = {
     home: <svg {...p}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
     forms: <svg {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
@@ -39,7 +39,7 @@ const Ic = ({ n, s = 20, color = 'currentColor' }: { n: string, s?: number, colo
     plug: <svg {...p}><path d="M12 22v-4"></path><path d="M12 8V2"></path><path d="M4 10h16"></path><path d="M8 2v6"></path><path d="M16 2v6"></path><rect x="6" y="10" width="12" height="8" rx="2"></rect></svg>
   };
   return <>{icons[n] || null}</>;
-};
+}
 
 // ─── 2. REUSABLE SAAS UI COMPONENTS ─────────────────────────────────────────
 const Card = ({ children, style = {}, onClick }: any) => (
