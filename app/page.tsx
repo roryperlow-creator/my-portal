@@ -1129,153 +1129,123 @@ const LeadsView = () => {
   );
 };
 
-const InternalFormsView = () => {
-  const [formData, setFormData] = useState({ first_name: '', last_name: '', phone: '', email: '', monthly_premium: '' });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const InternalFormsView = ({ isRecruiting }: { isRecruiting?: boolean }) => {
+  // Recruiting State
+  const [logData, setLogData] = useState({ name: '', email: '', phone: '', outcome: 'follow_up', notes: '' });
+  
+  // Retention State - Intake
+  const [intakeData, setIntakeData] = useState({ first_name: '', last_name: '', email: '', phone: '', product: 'IUL', monthly_premium: '' });
+  
+  // Retention State - Activation
+  const [activationData, setActivationData] = useState({ client_id: '', policy_number: '', effective_date: '', payment_status: 'cleared' });
+  
+  const [submittingId, setSubmittingId] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent, formId: string) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setTimeout(() => { alert("Success! Form processed."); setIsSubmitting(false); setFormData({first_name:'', last_name:'', phone:'', email:'', monthly_premium:''}) }, 1000);
+    setSubmittingId(formId);
+    setTimeout(() => { 
+      alert("Success! Form processed."); 
+      setSubmittingId(null); 
+      if(formId === 'log') setLogData({ name: '', email: '', phone: '', outcome: 'follow_up', notes: '' });
+      if(formId === 'intake') setIntakeData({ first_name: '', last_name: '', email: '', phone: '', product: 'IUL', monthly_premium: '' });
+      if(formId === 'activation') setActivationData({ client_id: '', policy_number: '', effective_date: '', payment_status: 'cleared' });
+    }, 1000);
   };
 
   return (
-    <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>Internal Forms</h1>
-      <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px', marginBottom: '24px' }}>Process and activate new client policies.</p>
-      
-      <div style={{ display: 'flex', gap: '40px', alignItems: 'flex-start' }}>
-        <Card style={{ flex: '1 1 500px', padding: '40px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '8px', color: '#0f172a' }}>Policy Intake Form</h2>
-          <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '32px' }}>Complete this upon closing the policy.</p>
-          <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-               <Input placeholder="First Name" required value={formData.first_name} onChange={(e:any) => setFormData({...formData, first_name: e.target.value})} />
-               <Input placeholder="Last Name" required value={formData.last_name} onChange={(e:any) => setFormData({...formData, last_name: e.target.value})} />
-            </div>
-            <Input placeholder="Email Address" type="email" required value={formData.email} onChange={(e:any) => setFormData({...formData, email: e.target.value})} />
-            <Input placeholder="Monthly Premium ($)" type="number" required value={formData.monthly_premium} onChange={(e:any) => setFormData({...formData, monthly_premium: e.target.value})} />
-            <Button variant="primary" style={{ width: '100%', marginTop: '16px' }} icon="check">{isSubmitting ? 'Processing...' : 'Submit Application'}</Button>
-          </form>
-        </Card>
-      </div>
-    </div>
-  );
-};
-
-const IntegrationHubView = () => {
-  const [integrations, setIntegrations] = useState([
-    { id: 'fb', name: 'Facebook Ads', desc: 'Sync inbound leads directly into your Recruiting or Retention pipeline.', connected: true, category: 'Marketing', icon: 'users', color: '#1877F2' },
-    { id: 'zapier', name: 'Zapier', desc: 'Connect Connect Portal to 5,000+ external apps via Webhooks.', connected: true, category: 'Automation', icon: 'zap', color: '#FF4A00' },
-    { id: 'ghl', name: 'GoHighLevel', desc: 'Bi-directional sync for CRM contacts, tags, and pipeline stages.', connected: false, category: 'CRM', icon: 'trending', color: '#1699e8' },
-    { id: 'sheets', name: 'Google Sheets', desc: 'Auto-export your daily KPI reports and new lead data to a secure sheet.', connected: false, category: 'Data', icon: 'forms', color: '#0F9D58' },
-    { id: 'calendar', name: 'Google Calendar', desc: 'Sync your scheduled reviews, demos, and create Meet links instantly.', connected: true, category: 'Scheduling', icon: 'calendar', color: '#4285F4' },
-  ]);
-
-  const [activeModal, setActiveModal] = useState<string | null>(null);
-  const [tempKey, setTempKey] = useState('');
-
-  const toggleConnection = (id: string) => {
-    const integration = integrations.find(i => i.id === id);
-    if (!integration?.connected) {
-      setActiveModal(id);
-    } else {
-      setIntegrations(integrations.map(i => i.id === id ? { ...i, connected: false } : i));
-    }
-  };
-
-  const handleSaveIntegration = () => {
-    setIntegrations(integrations.map(i => i.id === activeModal ? { ...i, connected: true } : i));
-    setActiveModal(null);
-    setTempKey('');
-  };
-
-  const activeApp = integrations.find(i => i.id === activeModal);
-
-  return (
-    <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <div>
-          <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>Integration Hub</h1>
-          <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px' }}>Connect your portal to the tools you already use.</p>
-        </div>
-        <Button variant="primary" icon="search">Browse App Directory</Button>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
-        {integrations.map(app => (
-          <Card key={app.id} style={{ padding: '32px', display: 'flex', flexDirection: 'column', height: '100%', transition: 'border 0.2s', border: app.connected ? '1px solid #22c55e' : '1px solid #e2e8f0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-              <div style={{ width: 56, height: 56, borderRadius: '16px', background: `${app.color}15`, color: app.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Ic n={app.icon} s={28} />
-              </div>
-              <Toggle enabled={app.connected} onToggle={() => toggleConnection(app.id)} />
-            </div>
-            <h3 style={{ margin: '0 0 8px 0', fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>{app.name}</h3>
-            <p style={{ margin: '0 0 24px 0', color: '#64748b', fontSize: '14px', lineHeight: '1.6', flex: 1 }}>{app.desc}</p>
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '20px', borderTop: '1px solid #f1f5f9' }}>
-              <Badge text={app.category} status="neutral" />
-              {app.connected ? (
-                <span style={{ fontSize: '13px', fontWeight: 800, color: '#16a34a', display: 'flex', alignItems: 'center', gap: '6px' }}><Ic n="check" s={14}/> Connected</span>
-              ) : (
-                <Button variant="ghost" onClick={() => setActiveModal(app.id)} style={{ padding: 0, fontSize: '13px' }}>Configure ➔</Button>
-              )}
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      <Modal isOpen={!!activeModal} onClose={() => { setActiveModal(null); setTempKey(''); }} title={`Connect ${activeApp?.name}`}>
-        <p style={{ color: '#64748b', fontSize: '15px', marginBottom: '24px', lineHeight: '1.6' }}>
-          To securely connect <strong>{activeApp?.name}</strong> to your portal, please provide your API Key or authorize access below.
+    <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+      <div style={{ marginBottom: '32px' }}>
+        <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>Internal Forms</h1>
+        <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px' }}>
+          {isRecruiting ? 'Log interview outcomes and track candidate progress.' : 'Process new applications and activate bound policies.'}
         </p>
-        {activeApp?.id === 'zapier' ? (
-           <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '12px', border: '1px dashed #cbd5e1', marginBottom: '24px' }}>
-             <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Your Webhook URL</div>
-             <div style={{ display: 'flex', gap: '12px' }}>
-               <input readOnly value="https://api.connect-hq.net/v1/zapier/hook/98x7-34" style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff', color: '#0f172a', fontSize: '14px', outline: 'none' }} />
-               <Button variant="outline">Copy</Button>
-             </div>
-           </div>
-        ) : (
-          <Input label={`${activeApp?.name} API Key / Token`} type="password" placeholder="Paste your API key here..." value={tempKey} onChange={(e:any) => setTempKey(e.target.value)} />
-        )}
-        <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
-          <Button variant="primary" style={{ flex: 1 }} onClick={handleSaveIntegration}>Save & Connect</Button>
-          <Button variant="outline" onClick={() => { setActiveModal(null); setTempKey(''); }}>Cancel</Button>
-        </div>
-      </Modal>
-    </div>
-  );
-};
-
-const NotificationsView = () => {
-  const mockNotifications = [
-    { id: 1, type: 'alert', icon: 'alert', color: '#ef4444', bg: '#fef2f2', title: 'Action Required', text: 'You have a pending notification that requires your immediate attention.', time: '10 min ago' },
-    { id: 2, type: 'message', icon: 'chat', color: '#3b82f6', bg: '#eff6ff', title: 'New Message', text: 'Jane Smith replied back: "Can we get on a call to discuss the details?"', time: '1 hour ago' },
-  ];
-  return (
-    <div style={{ maxWidth: '1000px', width: '100%', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>Notifications</h1>
-      <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px', marginBottom: '32px' }}>Stay on top of alerts and messages.</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {mockNotifications.map(note => (
-          <Card key={note.id} style={{ padding: '32px', display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
-            <div style={{ width: 56, height: 56, borderRadius: '50%', background: note.bg, color: note.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Ic n={note.icon} s={28} /></div>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{note.title}</h3>
-                <span style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 700 }}>{note.time}</span>
-              </div>
-              <p style={{ margin: 0, color: '#475569', fontSize: '15px', lineHeight: '1.6' }}>{note.text}</p>
-              <div style={{ marginTop: '20px', display: 'flex', gap: '12px' }}>
-                <Button variant="outline">Mark as Resolved</Button>
-              </div>
-            </div>
-          </Card>
-        ))}
       </div>
+      
+      {isRecruiting ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(auto, 600px)', gap: '32px', alignItems: 'start' }}>
+          <Card style={{ padding: '40px' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '8px', color: '#0f172a' }}>Post Call Log</h2>
+            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '32px' }}>Submit this log immediately after completing a candidate interview.</p>
+            <form onSubmit={(e) => handleSubmit(e, 'log')}>
+              <Input label="Candidate Name" required value={logData.name} onChange={(e:any) => setLogData({...logData, name: e.target.value})} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <Input label="Email Address" type="email" required value={logData.email} onChange={(e:any) => setLogData({...logData, email: e.target.value})} />
+                <Input label="Phone Number" required value={logData.phone} onChange={(e:any) => setLogData({...logData, phone: e.target.value})} />
+              </div>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Call Outcome</label>
+                <select style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #cbd5e1', background: '#f8fafc', outline: 'none', fontSize: '15px', color: '#0f172a' }} value={logData.outcome} onChange={e => setLogData({...logData, outcome: e.target.value})}>
+                  <option value="follow_up">Needs Follow Up</option>
+                  <option value="onboarded">Joined / Onboarded</option>
+                  <option value="not_interested">Not Interested</option>
+                  <option value="no_show">No Show</option>
+                </select>
+              </div>
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Interview Notes</label>
+                <textarea style={{ width: '100%', boxSizing: 'border-box', padding: '16px', borderRadius: '12px', border: '1px solid #cbd5e1', background: '#f8fafc', outline: 'none', fontSize: '15px', color: '#0f172a', minHeight: '120px', resize: 'vertical' }} placeholder="Detail candidate's experience, goals, and next steps..." value={logData.notes} onChange={e => setLogData({...logData, notes: e.target.value})} />
+              </div>
+              <Button variant="primary" style={{ width: '100%' }} icon="check">{submittingId === 'log' ? 'Submitting...' : 'Submit Call Log'}</Button>
+            </form>
+          </Card>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '32px', alignItems: 'start' }}>
+          <Card style={{ padding: '40px' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '8px', color: '#0f172a' }}>Policy Intake Form</h2>
+            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '32px' }}>Complete this upon drafting or submitting a new policy.</p>
+            <form onSubmit={(e) => handleSubmit(e, 'intake')}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                 <Input label="First Name" required value={intakeData.first_name} onChange={(e:any) => setIntakeData({...intakeData, first_name: e.target.value})} />
+                 <Input label="Last Name" required value={intakeData.last_name} onChange={(e:any) => setIntakeData({...intakeData, last_name: e.target.value})} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <Input label="Email Address" type="email" required value={intakeData.email} onChange={(e:any) => setIntakeData({...intakeData, email: e.target.value})} />
+                <Input label="Phone Number" required value={intakeData.phone} onChange={(e:any) => setIntakeData({...intakeData, phone: e.target.value})} />
+              </div>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Product Type</label>
+                <select style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #cbd5e1', background: '#f8fafc', outline: 'none', fontSize: '15px', color: '#0f172a' }} value={intakeData.product} onChange={e => setIntakeData({...intakeData, product: e.target.value})}>
+                  <option value="IUL">IUL (Indexed Universal Life)</option>
+                  <option value="Term">Term Life</option>
+                  <option value="Final Expense">Final Expense</option>
+                  <option value="Annuity">Annuity</option>
+                </select>
+              </div>
+              <Input label="Estimated Monthly Premium ($)" type="number" required value={intakeData.monthly_premium} onChange={(e:any) => setIntakeData({...intakeData, monthly_premium: e.target.value})} />
+              <Button variant="primary" style={{ width: '100%', marginTop: '8px' }} icon="upload">{submittingId === 'intake' ? 'Processing...' : 'Submit Application'}</Button>
+            </form>
+          </Card>
+
+          <Card style={{ padding: '40px', border: '1px solid #bbf7d0', boxShadow: '0 4px 6px -1px rgba(34,197,94,0.1)' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '8px', color: '#166534' }}>Policy Activation</h2>
+            <p style={{ color: '#16a34a', fontSize: '14px', marginBottom: '32px', fontWeight: 500 }}>Confirm active status and first payment.</p>
+            <form onSubmit={(e) => handleSubmit(e, 'activation')}>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Select Pending Client</label>
+                <select style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #cbd5e1', background: '#f8fafc', outline: 'none', fontSize: '15px', color: '#0f172a' }} value={activationData.client_id} onChange={e => setActivationData({...activationData, client_id: e.target.value})} required>
+                  <option value="">-- Choose a Client --</option>
+                  <option value="1">Mike Johnson</option>
+                  <option value="2">Sarah Martinez</option>
+                  <option value="3">David Chen</option>
+                </select>
+              </div>
+              <Input label="Carrier Policy Number" required value={activationData.policy_number} onChange={(e:any) => setActivationData({...activationData, policy_number: e.target.value})} />
+              <Input label="Effective Date" type="date" required value={activationData.effective_date} onChange={(e:any) => setActivationData({...activationData, effective_date: e.target.value})} />
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>First Payment Status</label>
+                <select style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #cbd5e1', background: '#f8fafc', outline: 'none', fontSize: '15px', color: '#0f172a' }} value={activationData.payment_status} onChange={e => setActivationData({...activationData, payment_status: e.target.value})}>
+                  <option value="cleared">Cleared / Processed</option>
+                  <option value="failed">Failed / Bounced</option>
+                  <option value="pending">Pending Draft</option>
+                </select>
+              </div>
+              <Button variant="success" style={{ width: '100%' }} icon="check">{submittingId === 'activation' ? 'Activating...' : 'Activate Policy'}</Button>
+            </form>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
@@ -1513,7 +1483,7 @@ export default function Portal() {
           {!isEmployee && activeTab === 'directory' && <ContactsDirectory />}
           {!isEmployee && activeTab === 'broadcast' && <BroadcastCenter />}
           {!isEmployee && activeTab === 'calendar' && <CalendarView isRecruiting={activeSystem === 'recruiting'} />}
-          {!isEmployee && activeTab === 'forms' && <InternalFormsView />}
+          {!isEmployee && activeTab === 'forms' && <InternalFormsView isRecruiting={activeSystem === 'recruiting'} />}
           {!isEmployee && activeTab === 'integrations' && <IntegrationHubView />}
           {!isEmployee && activeTab === 'notifications' && <NotificationsView />}
           {!isEmployee && activeTab === 'forecast' && <ForecastingPage isRecruiting={activeSystem === 'recruiting'} />}
