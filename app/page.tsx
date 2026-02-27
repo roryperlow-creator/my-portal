@@ -1249,7 +1249,111 @@ const InternalFormsView = ({ isRecruiting }: { isRecruiting?: boolean }) => {
     </div>
   );
 };
+// ─── ENTERPRISE INTEGRATION HUB & NOTIFICATIONS ──────────────────────────────
 
+const IntegrationHubView = () => {
+  const [integrations, setIntegrations] = useState([
+    { id: 'fb', name: 'Facebook Ads', desc: 'Sync inbound leads directly into your Recruiting or Retention pipeline.', connected: true, category: 'Marketing', icon: 'users', color: '#1877F2' },
+    { id: 'zapier', name: 'Zapier', desc: 'Connect Connect Portal to 5,000+ external apps via Webhooks.', connected: true, category: 'Automation', icon: 'zap', color: '#FF4A00' },
+    { id: 'ghl', name: 'GoHighLevel', desc: 'Bi-directional sync for CRM contacts, tags, and pipeline stages.', connected: false, category: 'CRM', icon: 'trending', color: '#1699e8' },
+    { id: 'sheets', name: 'Google Sheets', desc: 'Auto-export your daily KPI reports and new lead data to a secure sheet.', connected: false, category: 'Data', icon: 'forms', color: '#0F9D58' },
+    { id: 'calendar', name: 'Google Calendar', desc: 'Sync your scheduled reviews, demos, and create Meet links instantly.', connected: true, category: 'Scheduling', icon: 'calendar', color: '#4285F4' },
+    { id: 'calendly', name: 'Calendly', desc: 'Route inbound Calendly bookings directly to your Agent calendars.', connected: false, category: 'Scheduling', icon: 'calendar', color: '#006BFF' },
+    { id: 'mailchimp', name: 'Mailchimp', desc: 'Add activated policies to your monthly newsletter campaigns automatically.', connected: false, category: 'Marketing', icon: 'send', color: '#FFE01B' },
+  ]);
+
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [tempKey, setTempKey] = useState('');
+
+  const toggleConnection = (id: string) => {
+    const integration = integrations.find(i => i.id === id);
+    if (!integration?.connected) {
+      setActiveModal(id);
+    } else {
+      setIntegrations(integrations.map(i => i.id === id ? { ...i, connected: false } : i));
+    }
+  };
+
+  const handleSaveIntegration = () => {
+    setIntegrations(integrations.map(i => i.id === activeModal ? { ...i, connected: true } : i));
+    setActiveModal(null);
+    setTempKey('');
+  };
+
+  const activeApp = integrations.find(i => i.id === activeModal);
+
+  return (
+    <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32_px' }}>
+        <div>
+          <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>Integration Hub</h1>
+          <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px' }}>Connect your portal to the tools you already use.</p>
+        </div>
+        <Button variant="primary" icon="search">Browse App Directory</Button>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
+        {integrations.map(app => (
+          <Card key={app.id} style={{ padding: '32px', display: 'flex', flexDirection: 'column', height: '100%', transition: 'border 0.2s', border: app.connected ? '1px solid #22c55e' : '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+              <div style={{ width: 56, height: 56, borderRadius: '16px', background: `${app.color}15`, color: app.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Ic n={app.icon} s={28} />
+              </div>
+              <Toggle enabled={app.connected} onToggle={() => toggleConnection(app.id)} />
+            </div>
+            <h3 style={{ margin: '0 0 8px 0', fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>{app.name}</h3>
+            <p style={{ margin: '0 0 24px 0', color: '#64748b', fontSize: '14px', lineHeight: '1.6', flex: 1 }}>{app.desc}</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '20px', borderTop: '1px solid #f1f5f9' }}>
+              <Badge text={app.category} status="neutral" />
+              {app.connected ? (
+                <span style={{ fontSize: '13px', fontWeight: 800, color: '#16a34a', display: 'flex', alignItems: 'center', gap: '6px' }}><Ic n="check" s={14}/> Connected</span>
+              ) : (
+                <Button variant="ghost" onClick={() => setActiveModal(app.id)} style={{ padding: 0, fontSize: '13px' }}>Configure ➔</Button>
+              )}
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <Modal isOpen={!!activeModal} onClose={() => { setActiveModal(null); setTempKey(''); }} title={`Connect ${activeApp?.name}`}>
+        <p style={{ color: '#64748b', fontSize: '15px', marginBottom: '24px', lineHeight: '1.6' }}>Please provide your API Key or authorize access below.</p>
+        <Input label={`${activeApp?.name} API Key`} type="password" placeholder="Paste your API key here..." value={tempKey} onChange={(e:any) => setTempKey(e.target.value)} />
+        <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
+          <Button variant="primary" style={{ flex: 1 }} onClick={handleSaveIntegration}>Save & Connect</Button>
+          <Button variant="outline" onClick={() => { setActiveModal(null); setTempKey(''); }}>Cancel</Button>
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
+const NotificationsView = () => {
+  const mockNotifications = [
+    { id: 1, type: 'alert', icon: 'alert', color: '#ef4444', bg: '#fef2f2', title: 'Review Required: Michael Sterling', text: 'Annual review is due in 3 days. Please prepare the IUL performance report.', time: '10 min ago' },
+    { id: 2, type: 'message', icon: 'chat', color: '#3b82f6', bg: '#eff6ff', title: 'New Message from Sarah', text: '"Can we reschedule our 6-month check-in to Friday at 2 PM?"', time: '1 hour ago' },
+    { id: 3, type: 'success', icon: 'check', color: '#22c55e', bg: '#f0fdf4', title: 'Policy Activated', text: 'Vanguard Financial policy #88921 has been successfully activated.', time: '4 hours ago' },
+  ];
+  return (
+    <div style={{ maxWidth: '1000px', width: '100%', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>Notifications</h1>
+      <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px', marginBottom: '32px' }}>Stay on top of reviews, messages, and system alerts.</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {mockNotifications.map(note => (
+          <Card key={note.id} style={{ padding: '32px', display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: note.bg, color: note.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Ic n={note.icon} s={28} /></div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{note.title}</h3>
+                <span style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 700 }}>{note.time}</span>
+              </div>
+              <p style={{ margin: 0, color: '#475569', fontSize: '15px', lineHeight: '1.6' }}>{note.text}</p>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
 // ─── 10. MAIN APP ROOT & ROUTING ────────────────────────────────────────────
 
 const ChatUI = ({ messages, onSend, onClose }: any) => {
