@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from './supabase';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, LineChart, Line } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, CartesianGrid, ReferenceLine, Legend } from 'recharts';
 import { v4 as uuidv4 } from 'uuid';
 import logoImg from './logo.png';
 
@@ -51,7 +51,6 @@ const AdminSalesDashboard = () => {
       <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>Connect HQ Overview</h1>
       <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px', marginBottom: '32px' }}>Your internal sales, global revenue, and platform health.</p>
       
-      {/* KPI METRICS */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>
         {[ 
           { l: 'Global MRR', v: '$48,000', c: '#22c55e' }, 
@@ -67,7 +66,6 @@ const AdminSalesDashboard = () => {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginBottom: '32px' }}>
-        {/* REVENUE CHART */}
         <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', height: '360px', display: 'flex', flexDirection: 'column' }}>
           <h3 style={{ margin: '0 0 24px 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>Platform Revenue Growth</h3>
           <div style={{ flex: 1, minHeight: 0 }}>
@@ -87,7 +85,6 @@ const AdminSalesDashboard = () => {
           </div>
         </div>
 
-        {/* ACTIVE SALES PIPELINE */}
         <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', height: '360px', overflowY: 'auto' }}>
           <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>Sales Pipeline</h3>
           
@@ -107,7 +104,6 @@ const AdminSalesDashboard = () => {
   );
 };
 
-// NEW: ADMIN VERIFICATION QUEUE
 const VerificationQueue = () => {
   const [pendingUsers, setPendingUsers] = useState<any[]>([]);
 
@@ -313,11 +309,9 @@ const AdminTeamManagementView = () => {
     </div>
   );
 };
-
 // ============================================================================
-// 2. EMPLOYEE VIEWS (Operations, Support, General Staff)
+// 2. EMPLOYEE VIEWS & SHARED HUB
 // ============================================================================
-
 const EmployeeDashboard = ({ profile }: any) => (
   <div style={{ maxWidth: '1400px', width: '100%' }}>
     <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a' }}>Welcome, {profile?.full_name || 'Team Member'}</h1>
@@ -408,7 +402,6 @@ const HelpDeskView = () => (
   </div>
 );
 
-// ─── INTERNAL TEAM HUB (Shared by Admins and Employees) ───
 const InternalTeamHub = ({ profile }: any) => {
   const [activeChannel, setActiveChannel] = useState('community');
   const [activeChannelName, setActiveChannelName] = useState('# community');
@@ -451,7 +444,7 @@ const InternalTeamHub = ({ profile }: any) => {
     const tempMsg = input;
     setInput('');
     const { error } = await supabase.from('internal_messages').insert([{ sender_id: profile.id, content: tempMsg, channel: activeChannel }]);
-    if (error) { alert("Message failed to send. Check Supabase Row Level Security policies for 'internal_messages'. Error: " + error.message); } 
+    if (error) { alert("Message failed to send. Check Supabase Row Level Security policies. Error: " + error.message); } 
     else { fetchMessages(); }
   };
 
@@ -513,7 +506,7 @@ const InternalTeamHub = ({ profile }: any) => {
   );
 };
 // ============================================================================
-// 3. NEW & ENHANCED CLIENT VIEWS (Leads, Retention, Recruiting)
+// 3. SHARED CLIENT CRM VIEWS
 // ============================================================================
 
 const LeadsView = () => {
@@ -741,262 +734,6 @@ const LeadsView = () => {
   );
 };
 
-const HealthScoreSection = () => {
-  const mockHealth = [
-    { name: 'Michael Sterling', type: 'IUL', premium: '$245', status: 'green', days: '4' },
-    { name: 'Sarah Jenkins', type: 'Term', premium: '$85', status: 'yellow', days: '32' },
-    { name: 'Luke Kendo', type: 'Final Expense', premium: '$120', status: 'red', days: '64' },
-  ];
-  return (
-    <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', marginTop: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-      <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>Client Health Scores</h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {mockHealth.map((h, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <div style={{ width: 16, height: 16, borderRadius: '50%', background: h.status === 'green' ? '#22c55e' : h.status === 'yellow' ? '#f59e0b' : '#ef4444', boxShadow: `0 0 0 4px ${h.status === 'green' ? '#dcfce7' : h.status === 'yellow' ? '#fef3c7' : '#fee2e2'}` }} />
-              <div>
-                <div style={{ fontWeight: 800, fontSize: '15px', color: '#0f172a' }}>{h.name}</div>
-                <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px', fontWeight: 500 }}>{h.type} • {h.premium}/mo</div>
-              </div>
-            </div>
-            <div style={{ textAlign: 'right', fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
-              Last contact:<br/>
-              <span style={{color: h.status === 'red' ? '#ef4444' : '#0f172a', fontWeight: 800, fontSize: '14px'}}>{h.days} days ago</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const LapseRiskAlerts = () => (
-  <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', marginTop: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-    <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: 800, color: '#ef4444', display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <Ic n="alert" /> Lapse Risk Alerts
-    </h3>
-    <div style={{ padding: '24px', border: '2px dashed #fca5a5', borderRadius: '12px', background: '#fef2f2', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <div>
-        <div style={{ fontWeight: 800, fontSize: '18px', color: '#991b1b' }}>David Alawieh</div>
-        <div style={{ fontSize: '14px', color: '#b91c1c', marginTop: '6px', fontWeight: 600 }}>Flag Reason: Multiple missed payments (2)</div>
-      </div>
-      <button style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '8px', fontWeight: 800, cursor: 'pointer', fontSize: '14px' }}>Review Client</button>
-    </div>
-  </div>
-);
-
-const PolicyReviewsPage = ({ isAdminMode }: { isAdminMode: boolean }) => (
-  <div style={{ maxWidth: '1200px', width: '100%' }}>
-    <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#0f172a', margin: 0 }}>Policy Reviews</h1>
-    <p style={{ color: '#64748b', marginTop: '8px', marginBottom: '32px', fontSize: '15px' }}>Manage upcoming annual and check-in policy reviews.</p>
-    
-    <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-        <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-          <tr>
-            <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Client Name</th>
-            <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Review Type</th>
-            <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Due Date</th>
-            {isAdminMode && <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Assigned Agent</th>}
-            <th style={{ padding: '20px 24px', textAlign: 'right', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-            <td style={{ padding: '24px', fontWeight: 800, color: '#0f172a', fontSize: '15px' }}>Michael Sterling</td>
-            <td style={{ padding: '24px', color: '#64748b', fontWeight: 600, fontSize: '14px' }}>Annual Review</td>
-            <td style={{ padding: '24px', color: '#ef4444', fontWeight: 800, fontSize: '14px' }}>Oct 30, 2026</td>
-            {isAdminMode && <td style={{ padding: '24px', color: '#0f172a', fontWeight: 700, fontSize: '14px' }}>Rory Perlow</td>}
-            <td style={{ padding: '24px', textAlign: 'right' }}>
-              <button style={{ background: '#0f172a', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontSize: '14px', fontWeight: 800, cursor: 'pointer' }}>Mark Complete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-);
-
-const ForecastingPage = ({ isRecruiting }: { isRecruiting?: boolean }) => (
-  <div style={{ maxWidth: '1200px', width: '100%' }}>
-    <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-      {isRecruiting ? 'Recruiting Forecast' : 'Revenue Forecasting'}
-    </h1>
-    <p style={{ color: '#64748b', marginTop: '8px', marginBottom: '32px', fontSize: '15px' }}>
-      {isRecruiting ? 'Predictive models for upcoming new agent recruits.' : 'Predictive models based on active policies and lapse risks.'}
-    </p>
-    
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-      <div style={{ background: '#fff', padding: '40px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-        <div style={{ fontSize: '13px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          {isRecruiting ? 'Projected Recruits (This Month)' : 'Projected Monthly Revenue'}
-        </div>
-        <div style={{ fontSize: '48px', fontWeight: 800, color: '#22c55e', marginTop: '16px' }}>
-          {isRecruiting ? '34' : '$12,450'}
-        </div>
-      </div>
-      <div style={{ background: '#fff', padding: '40px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-        <div style={{ fontSize: '13px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          {isRecruiting ? 'Projected Drop-Offs' : 'At-Risk Revenue'}
-        </div>
-        <div style={{ fontSize: '48px', fontWeight: 800, color: '#ef4444', marginTop: '16px' }}>
-          {isRecruiting ? '5' : '$840'}
-        </div>
-      </div>
-    </div>
-
-    <div style={{ background: '#fff', padding: '40px', borderRadius: '16px', border: '1px solid #e2e8f0', height: '450px', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-       <h3 style={{ margin: '0 0 32px 0', fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>6-Month Projection</h3>
-       <div style={{flex: 1, minHeight: 0}}>
-         <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={
-              isRecruiting 
-              ? [{m:'May', v:18}, {m:'Jun', v:22}, {m:'Jul', v:28}, {m:'Aug', v:34}, {m:'Sep', v:42}, {m:'Oct', v:55}]
-              : [{m:'May', v:4000}, {m:'Jun', v:4500}, {m:'Jul', v:5100}, {m:'Aug', v:5800}, {m:'Sep', v:6200}, {m:'Oct', v:7100}]
-            }>
-              <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{fontSize: 13, fill: '#94a3b8', fontWeight: 700}} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{fontSize: 13, fill: '#94a3b8', fontWeight: 700}} tickFormatter={(v) => isRecruiting ? `${v}` : `$${v}`} dx={-10} />
-              <Tooltip cursor={{stroke: '#e2e8f0', strokeWidth: 2}} contentStyle={{borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'}} />
-              <Line type="monotone" dataKey="v" stroke="#22c55e" strokeWidth={5} dot={{r: 6, fill: '#fff', stroke: '#22c55e', strokeWidth: 3}} activeDot={{r: 8}} />
-            </LineChart>
-         </ResponsiveContainer>
-       </div>
-    </div>
-  </div>
-);
-
-const AgentPerformancePage = ({ onAgentSelect, isRecruiting }: any) => {
-  const retentionAgents = [
-    { id: '1', name: 'Rory Perlow', active: 45, retention: '98%', rev: '$4,500', fail: 1, pend: 0, conv: '10.7%', time: '2 Days' },
-    { id: '2', name: 'Sarah Jenkins', active: 32, retention: '95%', rev: '$3,200', fail: 0, pend: 2, conv: '9.4%', time: '1 Day' },
-  ];
-
-  const recruitingAgents = [
-    { id: '1', name: 'Rory Perlow', recruits: 12, appts: 38, showRate: '85%', conv: '31%', time: '14 Days' },
-    { id: '2', name: 'Sarah Jenkins', recruits: 8, appts: 24, showRate: '78%', conv: '33%', time: '18 Days' },
-  ];
-
-  const data = isRecruiting ? recruitingAgents : retentionAgents;
-
-  return (
-    <div style={{ maxWidth: '1400px', width: '100%' }}>
-      <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-        {isRecruiting ? 'Recruiter Leaderboard' : 'Agent Leaderboard'}
-      </h1>
-      <p style={{ color: '#64748b', marginTop: '8px', marginBottom: '32px', fontSize: '15px' }}>Click a team member to drill down into their specific dashboard.</p>
-      
-      <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-            {isRecruiting ? (
-              <tr>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Recruiter</th>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Recruits</th>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Appts Taken</th>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Show Rate</th>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hire Conv %</th>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Time to Hire</th>
-              </tr>
-            ) : (
-              <tr>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Agent</th>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Policies</th>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Retention %</th>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>MRR</th>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Lead Conv %</th>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Failed/Pend</th>
-                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Time</th>
-              </tr>
-            )}
-          </thead>
-          <tbody>
-            {data.map((a: any) => (
-              <tr key={a.id} onClick={() => onAgentSelect(a)} style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer', transition: '0.2s' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = '#fff'}>
-                <td style={{ padding: '24px', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '16px', fontSize: '15px' }}>
-                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: isRecruiting ? '#eff6ff' : '#f0fdf4', color: isRecruiting ? '#1e3a8a' : '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>{a.name.charAt(0)}</div>
-                  {a.name}
-                </td>
-                
-                {isRecruiting ? (
-                  <>
-                    <td style={{ padding: '24px', color: '#22c55e', fontWeight: 800, fontSize: '15px' }}>{a.recruits}</td>
-                    <td style={{ padding: '24px', fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>{a.appts}</td>
-                    <td style={{ padding: '24px', fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>{a.showRate}</td>
-                    <td style={{ padding: '24px', color: '#0f172a', fontWeight: 700, fontSize: '15px' }}>{a.conv}</td>
-                    <td style={{ padding: '24px', color: '#64748b', fontWeight: 600, fontSize: '14px' }}>{a.time}</td>
-                  </>
-                ) : (
-                  <>
-                    <td style={{ padding: '24px', fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>{a.active}</td>
-                    <td style={{ padding: '24px', color: '#22c55e', fontWeight: 800, fontSize: '15px' }}>{a.retention}</td>
-                    <td style={{ padding: '24px', fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>{a.rev}</td>
-                    <td style={{ padding: '24px', color: '#0f172a', fontWeight: 700, fontSize: '15px' }}>{a.conv}</td>
-                    <td style={{ padding: '24px', fontSize: '15px' }}><span style={{color:'#ef4444', fontWeight:800}}>{a.fail}</span> / <span style={{color:'#f59e0b', fontWeight:800}}>{a.pend}</span></td>
-                    <td style={{ padding: '24px', color: '#64748b', fontWeight: 600, fontSize: '14px' }}>{a.time}</td>
-                  </>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
-
-// ============================================================================
-// 4. SHARED / ORIGINAL CLIENT VIEWS (Merged & Enhanced)
-// ============================================================================
-
-const CalendarView = ({ isRecruiting }: { isRecruiting?: boolean }) => {
-  const mockBookings = isRecruiting ? [
-    { id: 1, name: 'Jason Smith', role: 'Candidate', date: 'Oct 24, 2026', time: '10:00 AM EST', status: 'Upcoming' },
-    { id: 2, name: 'Amanda Clarke', role: 'Candidate', date: 'Oct 24, 2026', time: '1:30 PM EST', status: 'Upcoming' },
-  ] : [
-    { id: 1, name: 'Michael Sterling', role: 'Client', date: 'Oct 24, 2026', time: '10:00 AM EST', status: 'Upcoming' },
-    { id: 2, name: 'Sarah Jenkins', role: 'Client', date: 'Oct 24, 2026', time: '1:30 PM EST', status: 'Upcoming' },
-  ];
-
-  return (
-    <div style={{ maxWidth: '1200px', width: '100%' }}>
-      <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>
-        {isRecruiting ? 'Recruiting Interviews' : 'Client Appointments'}
-      </h1>
-      <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px', marginBottom: '32px' }}>
-        {isRecruiting ? 'Your scheduled calls with potential new agency recruits.' : 'Your scheduled policy reviews and client onboarding calls.'}
-      </p>
-      
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {mockBookings.map(booking => (
-          <div key={booking.id} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-              <div style={{ width: 72, height: 72, borderRadius: '16px', background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>{booking.date.split(' ')[0]}</span>
-                <span style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>{booking.date.split(' ')[1].replace(',', '')}</span>
-              </div>
-              <div>
-                <h3 style={{ margin: '0 0 6px 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{booking.name}</h3>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '14px', color: '#64748b', fontWeight: 600 }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Ic n="user" s={16} /> {booking.role}</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Ic n="calendar" s={16} /> {booking.time}</span>
-                </div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <span style={{ padding: '8px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 800, background: booking.status === 'Upcoming' ? '#f0fdf4' : '#fffbeb', color: booking.status === 'Upcoming' ? '#16a34a' : '#d97706', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                {booking.status}
-              </span>
-              <button style={{ background: '#0f172a', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '10px', fontSize: '14px', fontWeight: 800, cursor: 'pointer' }}>Join Call</button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 const ContactsView = ({ isRecruiting, isEmployee, profile }: any) => {
   const [selectedContact, setSelectedContact] = useState<any>(null);
   const [tab, setTab] = useState('overview');
@@ -1159,18 +896,176 @@ const NotificationsView = () => {
     </div>
   );
 };
+// ============================================================================
+// 4. SHARED CLIENT CRM VIEWS (Cont.)
+// ============================================================================
+
+const PolicyReviewsPage = ({ isAdminMode }: { isAdminMode: boolean }) => (
+  <div style={{ maxWidth: '1200px', width: '100%' }}>
+    <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#0f172a', margin: 0 }}>Policy Reviews</h1>
+    <p style={{ color: '#64748b', marginTop: '8px', marginBottom: '32px', fontSize: '15px' }}>Manage upcoming annual and check-in policy reviews.</p>
+    
+    <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+          <tr>
+            <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Client Name</th>
+            <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Review Type</th>
+            <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Due Date</th>
+            {isAdminMode && <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Assigned Agent</th>}
+            <th style={{ padding: '20px 24px', textAlign: 'right', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+            <td style={{ padding: '24px', fontWeight: 800, color: '#0f172a', fontSize: '15px' }}>Michael Sterling</td>
+            <td style={{ padding: '24px', color: '#64748b', fontWeight: 600, fontSize: '14px' }}>Annual Review</td>
+            <td style={{ padding: '24px', color: '#ef4444', fontWeight: 800, fontSize: '14px' }}>Oct 30, 2026</td>
+            {isAdminMode && <td style={{ padding: '24px', color: '#0f172a', fontWeight: 700, fontSize: '14px' }}>Rory Perlow</td>}
+            <td style={{ padding: '24px', textAlign: 'right' }}>
+              <button style={{ background: '#0f172a', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontSize: '14px', fontWeight: 800, cursor: 'pointer' }}>Mark Complete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+);
+
+const ForecastingPage = ({ isRecruiting }: { isRecruiting?: boolean }) => (
+  <div style={{ maxWidth: '1200px', width: '100%' }}>
+    <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+      {isRecruiting ? 'Recruiting Forecast' : 'Revenue Forecasting'}
+    </h1>
+    <p style={{ color: '#64748b', marginTop: '8px', marginBottom: '32px', fontSize: '15px' }}>
+      {isRecruiting ? 'Predictive models for upcoming new agent recruits.' : 'Predictive models based on active policies and lapse risks.'}
+    </p>
+    
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+      <div style={{ background: '#fff', padding: '40px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+        <div style={{ fontSize: '13px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          {isRecruiting ? 'Projected Recruits (This Month)' : 'Projected Monthly Revenue'}
+        </div>
+        <div style={{ fontSize: '48px', fontWeight: 800, color: '#22c55e', marginTop: '16px' }}>
+          {isRecruiting ? '34' : '$12,450'}
+        </div>
+      </div>
+      <div style={{ background: '#fff', padding: '40px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+        <div style={{ fontSize: '13px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          {isRecruiting ? 'Projected Drop-Offs' : 'At-Risk Revenue'}
+        </div>
+        <div style={{ fontSize: '48px', fontWeight: 800, color: '#ef4444', marginTop: '16px' }}>
+          {isRecruiting ? '5' : '$840'}
+        </div>
+      </div>
+    </div>
+
+    <div style={{ background: '#fff', padding: '40px', borderRadius: '16px', border: '1px solid #e2e8f0', height: '450px', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+       <h3 style={{ margin: '0 0 32px 0', fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>6-Month Projection</h3>
+       <div style={{flex: 1, minHeight: 0}}>
+         <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={
+              isRecruiting 
+              ? [{m:'May', v:18}, {m:'Jun', v:22}, {m:'Jul', v:28}, {m:'Aug', v:34}, {m:'Sep', v:42}, {m:'Oct', v:55}]
+              : [{m:'May', v:4000}, {m:'Jun', v:4500}, {m:'Jul', v:5100}, {m:'Aug', v:5800}, {m:'Sep', v:6200}, {m:'Oct', v:7100}]
+            }>
+              <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{fontSize: 13, fill: '#94a3b8', fontWeight: 700}} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{fontSize: 13, fill: '#94a3b8', fontWeight: 700}} tickFormatter={(v) => isRecruiting ? `${v}` : `$${v}`} dx={-10} />
+              <Tooltip cursor={{stroke: '#e2e8f0', strokeWidth: 2}} contentStyle={{borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'}} />
+              <Line type="monotone" dataKey="v" stroke="#22c55e" strokeWidth={5} dot={{r: 6, fill: '#fff', stroke: '#22c55e', strokeWidth: 3}} activeDot={{r: 8}} />
+            </LineChart>
+         </ResponsiveContainer>
+       </div>
+    </div>
+  </div>
+);
+
+const AgentPerformancePage = ({ onAgentSelect, isRecruiting }: any) => {
+  const retentionAgents = [
+    { id: '1', name: 'Rory Perlow', active: 45, retention: '98%', rev: '$4,500', fail: 1, pend: 0, conv: '10.7%', time: '2 Days' },
+    { id: '2', name: 'Sarah Jenkins', active: 32, retention: '95%', rev: '$3,200', fail: 0, pend: 2, conv: '9.4%', time: '1 Day' },
+  ];
+
+  const recruitingAgents = [
+    { id: '1', name: 'Rory Perlow', recruits: 12, appts: 38, showRate: '85%', conv: '31%', time: '14 Days' },
+    { id: '2', name: 'Sarah Jenkins', recruits: 8, appts: 24, showRate: '78%', conv: '33%', time: '18 Days' },
+  ];
+
+  const data = isRecruiting ? recruitingAgents : retentionAgents;
+
+  return (
+    <div style={{ maxWidth: '1400px', width: '100%' }}>
+      <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+        {isRecruiting ? 'Recruiter Leaderboard' : 'Agent Leaderboard'}
+      </h1>
+      <p style={{ color: '#64748b', marginTop: '8px', marginBottom: '32px', fontSize: '15px' }}>Click a team member to drill down into their specific dashboard.</p>
+      
+      <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+            {isRecruiting ? (
+              <tr>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Recruiter</th>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Recruits</th>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Appts Taken</th>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Show Rate</th>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hire Conv %</th>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Time to Hire</th>
+              </tr>
+            ) : (
+              <tr>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Agent</th>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Policies</th>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Retention %</th>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>MRR</th>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Lead Conv %</th>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Failed/Pend</th>
+                <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Time</th>
+              </tr>
+            )}
+          </thead>
+          <tbody>
+            {data.map((a: any) => (
+              <tr key={a.id} onClick={() => onAgentSelect(a)} style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer', transition: '0.2s' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = '#fff'}>
+                <td style={{ padding: '24px', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '16px', fontSize: '15px' }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: isRecruiting ? '#eff6ff' : '#f0fdf4', color: isRecruiting ? '#1e3a8a' : '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>{a.name.charAt(0)}</div>
+                  {a.name}
+                </td>
+                
+                {isRecruiting ? (
+                  <>
+                    <td style={{ padding: '24px', color: '#22c55e', fontWeight: 800, fontSize: '15px' }}>{a.recruits}</td>
+                    <td style={{ padding: '24px', fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>{a.appts}</td>
+                    <td style={{ padding: '24px', fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>{a.showRate}</td>
+                    <td style={{ padding: '24px', color: '#0f172a', fontWeight: 700, fontSize: '15px' }}>{a.conv}</td>
+                    <td style={{ padding: '24px', color: '#64748b', fontWeight: 600, fontSize: '14px' }}>{a.time}</td>
+                  </>
+                ) : (
+                  <>
+                    <td style={{ padding: '24px', fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>{a.active}</td>
+                    <td style={{ padding: '24px', color: '#22c55e', fontWeight: 800, fontSize: '15px' }}>{a.retention}</td>
+                    <td style={{ padding: '24px', fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>{a.rev}</td>
+                    <td style={{ padding: '24px', color: '#0f172a', fontWeight: 700, fontSize: '15px' }}>{a.conv}</td>
+                    <td style={{ padding: '24px', fontSize: '15px' }}><span style={{color:'#ef4444', fontWeight:800}}>{a.fail}</span> / <span style={{color:'#f59e0b', fontWeight:800}}>{a.pend}</span></td>
+                    <td style={{ padding: '24px', color: '#64748b', fontWeight: 600, fontSize: '14px' }}>{a.time}</td>
+                  </>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
 
 const RecruitingFormsView = () => {
-  const [formData, setFormData] = useState({
-    name: '', phone: '', email: '', lead_type: '', showed_up: '', call_notes: '', call_outcome: '', call_date: '', follow_up_needed: '', follow_up_date: ''
-  });
-
+  const [formData, setFormData] = useState({ name: '', phone: '', email: '', lead_type: '', showed_up: '', call_notes: '', call_outcome: '', call_date: '', follow_up_needed: '', follow_up_date: '' });
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert("Success! Recruiting call logged successfully.");
     setFormData({ name: '', phone: '', email: '', lead_type: '', showed_up: '', call_notes: '', call_outcome: '', call_date: '', follow_up_needed: '', follow_up_date: '' });
   };
-
   const inputStyle = { width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #cbd5e1', outline: 'none', fontSize: '15px', color: '#0f172a', background: '#fff', boxSizing: 'border-box' as const };
   const labelStyle = { display: 'block', fontSize: '13px', fontWeight: 800, color: '#475569', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' };
   const groupStyle = { marginBottom: '24px' };
@@ -1351,6 +1246,103 @@ const InternalFormsView = () => {
     </div>
   );
 };
+// ============================================================================
+// 5. THE DASHBOARDS
+// ============================================================================
+
+const CalendarView = ({ isRecruiting }: { isRecruiting?: boolean }) => {
+  const days = ['Sun 22', 'Mon 23', 'Tue 24', 'Wed 25', 'Thu 26', 'Fri 27', 'Sat 28'];
+  const hours = ['9AM', '10AM', '11AM', '12PM', '1PM', '2PM', '3PM', '4PM', '5PM', '6PM'];
+
+  // Mock blocks mimicking the Looker Studio Calendar screenshot
+  const eventBlocks = [
+    { day: 1, start: '9AM', span: 1, title: 'Jose Carlos (Interview)', type: 'interview' },
+    { day: 2, start: '10AM', span: 1, title: 'Hamzeh (Onboarding)', type: 'interview' },
+    { day: 2, start: '11AM', span: 1.5, title: 'Busy', type: 'busy' },
+    { day: 3, start: '9AM', span: 2, title: 'Landon & Ramon', type: 'interview' },
+    { day: 4, start: '10AM', span: 1, title: 'Jonathan (Review)', type: 'interview' },
+    { day: 4, start: '1PM', span: 1, title: 'Renata (Intro)', type: 'interview' },
+    { day: 5, start: '9AM', span: 1.5, title: 'Cody & Nate', type: 'interview' },
+    { day: 5, start: '3PM', span: 1, title: 'Jack Caron', type: 'interview' },
+  ];
+
+  return (
+    <div style={{ maxWidth: '1400px', width: '100%', display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>
+        {isRecruiting ? 'Recruiting Schedule' : 'Client Appointments'}
+      </h1>
+      <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px', marginBottom: '32px' }}>
+        Manage your weekly availability and upcoming calls.
+      </p>
+      
+      {/* Custom CSS Grid Calendar */}
+      <div style={{ flex: 1, background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '60px repeat(7, 1fr)', borderBottom: '1px solid #e2e8f0', background: '#f8fafc' }}>
+          <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', fontWeight: 800, color: '#94a3b8' }}>GMT</div>
+          {days.map((d, i) => (
+            <div key={i} style={{ padding: '16px', textAlign: 'center', fontSize: '13px', fontWeight: i === 4 ? 800 : 600, color: i === 4 ? '#3b82f6' : '#64748b', borderLeft: '1px solid #e2e8f0' }}>{d}</div>
+          ))}
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto', position: 'relative' }}>
+          {/* Red Time Line Simulation */}
+          <div style={{ position: 'absolute', top: '45%', left: '60px', right: 0, height: '2px', background: '#ef4444', zIndex: 10 }} />
+          
+          {hours.map((h, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '60px repeat(7, 1fr)', minHeight: '80px' }}>
+              <div style={{ borderBottom: '1px solid #e2e8f0', padding: '8px', fontSize: '11px', fontWeight: 700, color: '#94a3b8', textAlign: 'right' }}>{h}</div>
+              {days.map((_, col) => {
+                const block = eventBlocks.find(b => b.day === col && b.start === h);
+                return (
+                  <div key={col} style={{ borderBottom: '1px solid #e2e8f0', borderLeft: '1px solid #e2e8f0', position: 'relative', padding: '4px' }}>
+                    {block && (
+                      <div style={{ position: 'absolute', top: 4, left: 4, right: 4, height: `calc(${block.span * 100}% - 8px)`, background: block.type === 'busy' ? '#e2e8f0' : '#22c55e', color: block.type === 'busy' ? '#64748b' : '#fff', borderRadius: '4px', padding: '8px', fontSize: '12px', fontWeight: 700, zIndex: 5, overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                        {block.title}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const HealthScoreSection = () => {
+  const mockHealth = [
+    { name: 'Michael Sterling', type: 'IUL', premium: '$245', status: 'green', days: '4' },
+    { name: 'Sarah Jenkins', type: 'Term', premium: '$85', status: 'yellow', days: '32' },
+    { name: 'Luke Kendo', type: 'Final Expense', premium: '$120', status: 'red', days: '64' },
+  ];
+  return (
+    <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', marginTop: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+      <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>Client Health Scores</h3>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {mockHealth.map((h, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <div style={{ width: 16, height: 16, borderRadius: '50%', background: h.status === 'green' ? '#22c55e' : h.status === 'yellow' ? '#f59e0b' : '#ef4444', boxShadow: `0 0 0 4px ${h.status === 'green' ? '#dcfce7' : h.status === 'yellow' ? '#fef3c7' : '#fee2e2'}` }} />
+              <div><div style={{ fontWeight: 800, fontSize: '15px', color: '#0f172a' }}>{h.name}</div><div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px', fontWeight: 500 }}>{h.type} • {h.premium}/mo</div></div>
+            </div>
+            <div style={{ textAlign: 'right', fontSize: '13px', color: '#64748b', fontWeight: 600 }}>Last contact:<br/><span style={{color: h.status === 'red' ? '#ef4444' : '#0f172a', fontWeight: 800, fontSize: '14px'}}>{h.days} days ago</span></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const LapseRiskAlerts = () => (
+  <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', marginTop: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+    <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: 800, color: '#ef4444', display: 'flex', alignItems: 'center', gap: '10px' }}><Ic n="alert" /> Lapse Risk Alerts</h3>
+    <div style={{ padding: '24px', border: '2px dashed #fca5a5', borderRadius: '12px', background: '#fef2f2', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div><div style={{ fontWeight: 800, fontSize: '18px', color: '#991b1b' }}>David Alawieh</div><div style={{ fontSize: '14px', color: '#b91c1c', marginTop: '6px', fontWeight: 600 }}>Flag Reason: Multiple missed payments (2)</div></div>
+      <button style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '8px', fontWeight: 800, cursor: 'pointer', fontSize: '14px' }}>Review Client</button>
+    </div>
+  </div>
+);
 
 const RetentionDashboard = ({ profile, overrideAgent, clearOverride }: any) => {
   const [selectedAgent, setSelectedAgent] = useState(profile?.role === 'owner' ? 'all' : 'self');
@@ -1393,21 +1385,9 @@ const RetentionDashboard = ({ profile, overrideAgent, clearOverride }: any) => {
           </div>
         )}
       </div>
-      
-      {/* OWNER: LEAD PIPELINE SUMMARY */}
-      {(profile?.role === 'owner' && !overrideAgent) && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '24px' }}>
-          {[ { l: 'New Leads (Week)', val: '24', color: '#3b82f6' }, { l: 'Hot Leads', val: '6', color: '#ef4444' }, { l: 'Lead Conversion', val: '12.4%', color: '#22c55e' }, { l: 'Need Follow-Up', val: '15', color: '#f59e0b' } ].map((kpi, i) => (
-            <div key={i} style={{ background: '#f8fafc', padding: '32px', borderRadius: '16px', border: '1px solid #cbd5e1' }}>
-              <div style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{kpi.l}</div>
-              <div style={{ fontSize: '36px', fontWeight: 800, marginTop: '12px', color: kpi.color }}>{kpi.val}</div>
-            </div>
-          ))}
-        </div>
-      )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '24px', marginBottom: '24px' }}>
-        {[ { label: 'Active Policies', val: '105', color: '#22c55e' }, { label: 'Retention %', val: '95.00%', color: '#22c55e' }, { label: 'Total Monthly Revenue', val: '$10,500', color: '#0f172a' }, { label: 'Pending Payments', val: '3', color: '#f59e0b' }, { label: 'Failed Payments', val: '3', color: '#ef4444' } ].map((kpi, i) => (
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '32px' }}>
+        {[ { label: 'Pre-Leads (Pending)', val: '12', color: '#3b82f6' }, { label: 'Activated Policies', val: '104', color: '#22c55e' }, { label: 'Retention Rate', val: '95.2%', color: '#0f172a' }, { label: 'At-Risk Policies', val: '3', color: '#ef4444' } ].map((kpi, i) => (
           <div key={i} style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
             <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{kpi.label}</div>
             <div style={{ fontSize: '36px', fontWeight: 800, marginTop: '12px', color: kpi.color }}>{kpi.val}</div>
@@ -1415,163 +1395,157 @@ const RetentionDashboard = ({ profile, overrideAgent, clearOverride }: any) => {
         ))}
       </div>
 
-      <div style={{ background: '#fff', padding: '40px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', height: '450px', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
-          <div><h3 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>Growth Performance</h3><p style={{ margin: '8px 0 0 0', color: '#64748b', fontSize: '14px', fontWeight: 500 }}>Total active policies over time.</p></div>
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginBottom: '32px' }}>
+        <div style={{ background: '#fff', padding: '40px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', height: '400px', display: 'flex', flexDirection: 'column' }}>
+          <h3 style={{ margin: '0 0 24px 0', fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>Activated Policies (YTD)</h3>
+          <div style={{ flex: 1, minHeight: 0 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={growthData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                <defs><linearGradient id="colorPol" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22c55e" stopOpacity={0.2}/><stop offset="95%" stopColor="#22c55e" stopOpacity={0}/></linearGradient></defs>
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 13, fill: '#94a3b8', fontWeight: 700}} dy={10} />
+                <Tooltip cursor={{stroke: '#e2e8f0', strokeWidth: 2}} contentStyle={{borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'}} />
+                <Area type="monotone" dataKey="policies" stroke="#22c55e" strokeWidth={5} fill="url(#colorPol)" activeDot={{r: 8, strokeWidth: 2}} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </div>
-        <div style={{ flex: 1, minHeight: 0 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={growthData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
-              <defs><linearGradient id="colorPol" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22c55e" stopOpacity={0.2}/><stop offset="95%" stopColor="#22c55e" stopOpacity={0}/></linearGradient></defs>
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 13, fill: '#94a3b8', fontWeight: 700}} dy={10} />
-              <Tooltip cursor={{stroke: '#e2e8f0', strokeWidth: 2, strokeDasharray: '4 4'}} contentStyle={{borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'}} />
-              <Area type="monotone" dataKey="policies" stroke="#22c55e" strokeWidth={5} fill="url(#colorPol)" activeDot={{r: 8, strokeWidth: 2}} />
-            </AreaChart>
-          </ResponsiveContainer>
+
+        <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', height: '400px', overflowY: 'auto' }}>
+          <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>Upcoming Call Reviews</h3>
+          <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '12px' }}>
+            <div style={{ fontSize: '12px', color: '#ef4444', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Tomorrow, 10:00 AM</div>
+            <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '15px' }}>Michael Sterling</div>
+            <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px', fontWeight: 500 }}>Annual Policy Review</div>
+          </div>
+          <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+            <div style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Friday, 2:30 PM</div>
+            <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '15px' }}>Sarah Jenkins</div>
+            <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px', fontWeight: 500 }}>6-Month Check-in</div>
+          </div>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
         <HealthScoreSection />
         <LapseRiskAlerts />
       </div>
-
-      {(isTeamView && !overrideAgent) && (
-        <div style={{ background: '#fff', padding: '40px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-            <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>Top Agent Performers</h3>
-            <button style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#16a34a', fontWeight: 800, cursor: 'pointer', padding: '10px 20px', borderRadius: '8px', fontSize: '13px' }}>View All Agents</button>
-          </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '15px' }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid #e2e8f0', color: '#64748b' }}>
-                  <th style={{ padding: '20px 16px', fontWeight: 800, textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.05em' }}>Agent Name</th>
-                  <th style={{ padding: '20px 16px', fontWeight: 800, textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.05em' }}>Active Policies</th>
-                  <th style={{ padding: '20px 16px', fontWeight: 800, textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.05em' }}>Retention %</th>
-                  <th style={{ padding: '20px 16px', fontWeight: 800, textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.05em' }}>Monthly Rev</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockAgents.map(agent => (
-                  <tr key={agent.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '24px 16px', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '16px' }}><div style={{ width: 40, height: 40, borderRadius: '50%', background: '#f0fdf4', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>{agent.name.charAt(0)}</div>{agent.name}</td>
-                    <td style={{ padding: '24px 16px', color: '#0f172a', fontWeight: 700 }}>{agent.active}</td>
-                    <td style={{ padding: '24px 16px', color: '#22c55e', fontWeight: 800 }}>{agent.retention}</td>
-                    <td style={{ padding: '24px 16px', color: '#0f172a', fontWeight: 700 }}>{agent.revenue}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 const RecruitingDashboard = ({ profile }: any) => {
-  const [selectedAgent, setSelectedAgent] = useState(profile?.role === 'owner' ? 'all' : 'self');
-  const isTeamView = profile?.role === 'owner' && selectedAgent === 'all';
+  const isOwner = profile?.role === 'owner';
 
-  const mockRecruiters = [
-    { id: 'rory', name: 'Rory Perlow', active: 112, interviews: 45, hires: 12, conversions: '10.7%', time: '14 Days' },
-    { id: 'sarah', name: 'Sarah Jenkins', active: 85, interviews: 32, hires: 8, conversions: '9.4%', time: '18 Days' },
-    { id: 'michael', name: 'Michael Sterling', active: 64, interviews: 28, hires: 5, conversions: '7.8%', time: '21 Days' }
-  ];
-
-  const growthData = [
-    { name: 'Jan', candidates: 120 }, { name: 'Feb', candidates: 150 },
-    { name: 'Mar', candidates: 190 }, { name: 'Apr', candidates: 215 },
-    { name: 'May', candidates: 250 }, { name: 'Jun', candidates: 310 },
-  ];
-
-  const headerTitle = isTeamView ? 'Recruiting Overview' : (selectedAgent === 'self' ? 'My Pipeline' : `${mockRecruiters.find(a => a.id === selectedAgent)?.name}'s Pipeline`);
+  // Data modeling directly from Looker Studio screenshots
+  const dailyAppts = [{ d: 'Feb 23', v: 2 }, { d: 'Feb 24', v: 4 }, { d: 'Feb 25', v: 5 }, { d: 'Feb 26', v: 2 }];
+  const weeklySplit = [{ name: 'Joined', Licensed: 6, Unlicensed: 1 }];
+  const pipelineFlow = [{ name: 'Pipeline', Booked: 21, Shows: 0, Joined: 7 }]; // Shows is low in mock to match screenshot appearance
+  const cumulativeAgents = [{ d: 'Feb 23', v: 2 }, { d: 'Feb 24', v: 4 }, { d: 'Feb 25', v: 4 }, { d: 'Feb 26', v: 6 }];
 
   return (
     <div style={{ maxWidth: '1400px', width: '100%' }}>
-      {!isTeamView && profile?.role === 'owner' && (
-        <button onClick={() => setSelectedAgent('all')} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: '#64748b', fontWeight: 700, cursor: 'pointer', padding: 0, marginBottom: '24px', fontSize: '14px', transition: 'color 0.2s' }}>
-          <Ic n="back" s={18} /> Back to Team Overview
-        </button>
-      )}
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <div>
-          <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>{headerTitle}</h1>
-          <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px' }}>Track candidate flow, interviews, and hires.</p>
-        </div>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <select value={selectedAgent} onChange={(e) => setSelectedAgent(e.target.value)} style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid #cbd5e1', outline: 'none', background: '#fff', fontWeight: 700, color: '#0f172a', cursor: 'pointer', fontSize: '14px' }}>
-            {profile?.role === 'owner' ? (
-              <><option value="all">All Recruiters (Team View)</option>{mockRecruiters.map(agent => (<option key={agent.id} value={agent.id}>{agent.name}</option>))}</>
-            ) : (<option value="self">{profile?.full_name || 'My Pipeline'}</option>)}
-          </select>
+          <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, color: '#0f172a', letterSpacing: '-0.02em' }}>
+            {isOwner ? 'Global Recruiting Analytics' : 'My Recruiting Pipeline'}
+          </h1>
+          <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px' }}>Live metrics synced from advertising and CRM data.</p>
         </div>
       </div>
       
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '24px' }}>
-        {[ { label: 'Active Candidates', val: '261', color: '#3b82f6' }, { label: 'Interviews Booked', val: '105', color: '#0f172a' }, { label: 'Offers Extended', val: '32', color: '#f59e0b' }, { label: 'Total Hires', val: '25', color: '#22c55e' } ].map((kpi, i) => (
-          <div key={i} style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}><div style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{kpi.label}</div><div style={{ fontSize: '36px', fontWeight: 800, marginTop: '12px', color: kpi.color }}>{kpi.val}</div></div>
+      {/* EXACT LOOKER STUDIO KPI ROW */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+        {[ 
+          { label: 'Total Ads Spend', val: '$5,359.32', color: '#0f172a' }, 
+          { label: 'Total Appointments', val: '21', color: '#3b82f6' }, 
+          { label: 'Cost Per Action', val: '$144.09', color: '#0f172a' }, 
+          { label: 'Total Recruits Joined', val: '7', color: '#22c55e' },
+          { label: 'Licensed Delivered', val: '6', color: '#0f172a' },
+          { label: 'Licensing Success Rate', val: '85.71%', color: '#22c55e' }
+        ].map((kpi, i) => (
+          <div key={i} style={{ background: '#fff', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+            <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{kpi.label}</div>
+            <div style={{ fontSize: '28px', fontWeight: 800, marginTop: '8px', color: kpi.color }}>{kpi.val}</div>
+          </div>
         ))}
       </div>
 
-      <div style={{ background: '#fff', padding: '40px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', height: '450px', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
-          <div><h3 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>Pipeline Growth</h3><p style={{ margin: '8px 0 0 0', color: '#64748b', fontSize: '14px', fontWeight: 500 }}>Total candidates entering pipeline over time.</p></div>
-        </div>
-        <div style={{ flex: 1, minHeight: 0 }}>
+      {/* LOOKER STUDIO CHARTS - ROW 1 */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+        <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', height: '350px', display: 'flex', flexDirection: 'column' }}>
+          <h3 style={{ margin: '0 0 24px 0', fontSize: '18px', fontWeight: 800, color: '#3b82f6', textAlign: 'center' }}>Daily Appointments Booked</h3>
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={growthData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
-              <defs><linearGradient id="colorRec" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/><stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/></linearGradient></defs>
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 13, fill: '#94a3b8', fontWeight: 700}} dy={10} />
-              <Tooltip cursor={{stroke: '#e2e8f0', strokeWidth: 2, strokeDasharray: '4 4'}} contentStyle={{borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'}} />
-              <Area type="monotone" dataKey="candidates" stroke="#3b82f6" strokeWidth={5} fill="url(#colorRec)" activeDot={{r: 8, strokeWidth: 2}} />
-            </AreaChart>
+            <LineChart data={dailyAppts}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+              <XAxis dataKey="d" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8', fontWeight: 600}} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8', fontWeight: 600}} domain={[0, 10]} />
+              <Tooltip cursor={{stroke: '#e2e8f0', strokeWidth: 2}} contentStyle={{borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'}} />
+              <ReferenceLine y={10} stroke="#94a3b8" strokeDasharray="3 3" label={{ position: 'insideTopLeft', value: 'Goal', fill: '#94a3b8', fontSize: 12, fontWeight: 700 }} />
+              <Line type="monotone" dataKey="v" stroke="#3b82f6" strokeWidth={4} dot={false} activeDot={{r: 6}} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', height: '350px', display: 'flex', flexDirection: 'column' }}>
+          <h3 style={{ margin: '0 0 24px 0', fontSize: '18px', fontWeight: 800, color: '#3b82f6', textAlign: 'center' }}>Weekly Recruits Joined (Split)</h3>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={weeklySplit}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8', fontWeight: 600}} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8', fontWeight: 600}} domain={[0, 6]} />
+              <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '8px', border: '1px solid #e2e8f0'}} />
+              <Legend verticalAlign="top" height={36} iconType="circle" />
+              <Bar dataKey="Licensed" fill="#3b82f6" radius={[4, 4, 0, 0]} maxBarSize={60} />
+              <Bar dataKey="Unlicensed" fill="#22c55e" radius={[4, 4, 0, 0]} maxBarSize={60} />
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {isTeamView && (
-        <div style={{ background: '#fff', padding: '40px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-          <h3 style={{ margin: '0 0 32px 0', fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>Recruiter Performance</h3>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '15px' }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid #e2e8f0', color: '#64748b' }}>
-                  <th style={{ padding: '20px 16px', fontWeight: 800, textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.05em' }}>Recruiter Name</th>
-                  <th style={{ padding: '20px 16px', fontWeight: 800, textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.05em' }}>Active Candidates</th>
-                  <th style={{ padding: '20px 16px', fontWeight: 800, textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.05em' }}>Interviews Booked</th>
-                  <th style={{ padding: '20px 16px', fontWeight: 800, textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.05em' }}>Total Hires</th>
-                  <th style={{ padding: '20px 16px', fontWeight: 800, textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.05em' }}>Hire Conversion %</th>
-                  <th style={{ padding: '20px 16px', fontWeight: 800, textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.05em' }}>Avg Time to Hire</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockRecruiters.map(agent => (
-                  <tr key={agent.id} onClick={() => setSelectedAgent(agent.id)} style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer', transition: 'background 0.2s' }} onMouseOver={(e) => e.currentTarget.style.background = '#f8fafc'} onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
-                    <td style={{ padding: '24px 16px', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '16px' }}><div style={{ width: 40, height: 40, borderRadius: '50%', background: '#eff6ff', color: '#1e3a8a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>{agent.name.charAt(0)}</div>{agent.name}</td>
-                    <td style={{ padding: '24px 16px', color: '#0f172a', fontWeight: 700 }}>{agent.active}</td>
-                    <td style={{ padding: '24px 16px', color: '#0f172a', fontWeight: 700 }}>{agent.interviews}</td>
-                    <td style={{ padding: '24px 16px', color: '#22c55e', fontWeight: 800 }}>{agent.hires}</td>
-                    <td style={{ padding: '24px 16px', color: '#0f172a', fontWeight: 700 }}>{agent.conversions}</td>
-                    <td style={{ padding: '24px 16px', color: '#64748b', fontWeight: 600 }}>{agent.time}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      {/* LOOKER STUDIO CHARTS - ROW 2 */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', height: '350px', display: 'flex', flexDirection: 'column' }}>
+          <h3 style={{ margin: '0 0 24px 0', fontSize: '18px', fontWeight: 800, color: '#3b82f6', textAlign: 'center' }}>Licensing Pipeline Flow</h3>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={pipelineFlow}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={false} />
+              <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8', fontWeight: 600}} domain={[0, 25]} />
+              <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '8px', border: '1px solid #e2e8f0'}} />
+              <Legend verticalAlign="top" height={36} iconType="circle" />
+              <Bar dataKey="Booked" fill="#3b82f6" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey="Shows" fill="#22c55e" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey="Joined" fill="#a855f7" radius={[4, 4, 0, 0]} maxBarSize={40} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-      )}
+
+        <div style={{ background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', height: '350px', display: 'flex', flexDirection: 'column' }}>
+          <h3 style={{ margin: '0 0 24px 0', fontSize: '18px', fontWeight: 800, color: '#3b82f6', textAlign: 'center' }}>Cumulative Licensed Agents</h3>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={cumulativeAgents}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+              <defs><linearGradient id="colorCum" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/><stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/></linearGradient></defs>
+              <XAxis dataKey="d" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8', fontWeight: 600}} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8', fontWeight: 600}} domain={[0, 6]} />
+              <Tooltip cursor={{stroke: '#e2e8f0', strokeWidth: 2}} contentStyle={{borderRadius: '8px', border: '1px solid #e2e8f0'}} />
+              <Area type="monotone" dataKey="v" stroke="#3b82f6" strokeWidth={4} fill="url(#colorCum)" activeDot={{r: 6}} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 };
+// ============================================================================
+// 6. GLOBAL SETTINGS, AI BOT, & APP ROOT
+// ============================================================================
 
 const GhlAccountView = ({ profile, setProfile, isEmployee }: any) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [apiKey, setApiKey] = useState('');
+  const [apiKey, setApiKey] = useState('connect_pk_9a8b7c6d5e4f3g2h1i0j'); // Mock API Key
 
   const [firstName, setFirstName] = useState(profile?.full_name ? profile.full_name.split(' ')[0] : '');
   const [lastName, setLastName] = useState(profile?.full_name ? profile.full_name.split(' ').slice(1).join(' ') : '');
@@ -1579,18 +1553,12 @@ const GhlAccountView = ({ profile, setProfile, isEmployee }: any) => {
   const handleConnectCalendar = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        scopes: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events',
-        queryParams: { access_type: 'offline', prompt: 'consent' },
-        redirectTo: window.location.origin 
-      }
+      options: { scopes: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events', queryParams: { access_type: 'offline', prompt: 'consent' }, redirectTo: window.location.origin }
     });
     if (error) alert("Error connecting calendar: " + error.message);
   };
 
-  const handleGenerateKey = () => { setApiKey(uuidv4()); };
   const handleCopyKey = () => { navigator.clipboard.writeText(apiKey); alert("API Key copied to clipboard!"); };
-
   const handleAvatarClick = () => { fileInputRef.current?.click(); };
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => { if (event.target.files?.[0]) setAvatarFile(event.target.files[0]); };
 
@@ -1609,9 +1577,7 @@ const GhlAccountView = ({ profile, setProfile, isEmployee }: any) => {
         finalAvatarUrl = publicUrl;
       }
       const newFullName = `${firstName} ${lastName}`.trim();
-      const { error: updateError } = await supabase.from('profiles').update({ 
-        full_name: newFullName, avatar_url: finalAvatarUrl 
-      }).eq('id', profile.id);
+      const { error: updateError } = await supabase.from('profiles').update({ full_name: newFullName, avatar_url: finalAvatarUrl }).eq('id', profile.id);
       if (updateError) throw updateError;
       setProfile({ ...profile, full_name: newFullName, avatar_url: finalAvatarUrl });
       alert('Profile updated successfully!');
@@ -1646,23 +1612,17 @@ const GhlAccountView = ({ profile, setProfile, isEmployee }: any) => {
             <button onClick={handleUpdateProfile} disabled={uploading} style={{ background: uploading ? '#94a3b8' : '#22c55e', color: '#fff', border: 'none', padding: '16px 32px', borderRadius: '12px', fontWeight: 800, cursor: uploading ? 'not-allowed' : 'pointer', fontSize: '15px' }}>{uploading ? 'Updating...' : 'Update Profile'}</button>
           </div>
 
-          {/* NEW API KEY MANAGEMENT SECTION */}
           {(!isEmployee && profile?.role === 'owner') && (
             <div style={{ background: '#fff', padding: '40px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>API Integration</h3>
-                <span style={{ background: apiKey ? '#f0fdf4' : '#f1f5f9', color: apiKey ? '#16a34a' : '#64748b', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{apiKey ? 'Active' : 'Inactive'}</span>
+                <span style={{ background: '#f0fdf4', color: '#16a34a', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active</span>
               </div>
               <p style={{ color: '#64748b', fontSize: '15px', marginBottom: '32px', lineHeight: '1.6' }}>Use this API key to connect your lead sources via Zapier. Your leads will automatically appear in your Leads Pipeline.</p>
-              
-              {apiKey ? (
-                <div style={{ display: 'flex', gap: '16px' }}>
-                  <input readOnly value={apiKey} style={{ flex: 1, padding: '16px', borderRadius: '12px', border: '1px solid #cbd5e1', background: '#f8fafc', color: '#64748b', outline: 'none', fontFamily: 'monospace', fontSize: '15px' }} />
-                  <button onClick={handleCopyKey} style={{ background: '#0f172a', color: '#fff', border: 'none', padding: '0 32px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', fontSize: '15px' }}>Copy Key</button>
-                </div>
-              ) : (
-                <button onClick={handleGenerateKey} style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '16px 32px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', fontSize: '15px' }}>Generate New Key</button>
-              )}
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <input readOnly value={apiKey} style={{ flex: 1, padding: '16px', borderRadius: '12px', border: '1px solid #cbd5e1', background: '#f8fafc', color: '#64748b', outline: 'none', fontFamily: 'monospace', fontSize: '15px' }} />
+                <button onClick={handleCopyKey} style={{ background: '#0f172a', color: '#fff', border: 'none', padding: '0 32px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', fontSize: '15px' }}>Copy Key</button>
+              </div>
             </div>
           )}
         </div>
@@ -1703,9 +1663,6 @@ const ChatUI = ({ messages, onSend, isMini, onClose }: any) => {
   );
 };
 
-// ============================================================================
-// 4. MAIN PORTAL ARCHITECTURE
-// ============================================================================
 export default function Portal() {
   const [session, setSession] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -1759,7 +1716,6 @@ export default function Portal() {
                 setActiveTab('employee_dashboard');
               }
             } else if (prof.client_type !== 'recruiting') {
-              // Default to leads view for retention system users
               setActiveTab('leads');
             }
         }
@@ -2020,4 +1976,3 @@ export default function Portal() {
     </div>
   );
 }
-
